@@ -27,13 +27,13 @@ def twitter():
     driver = webdriver.Chrome(executable_path="./chromedriver.exe")
     driver.implicitly_wait(30)
 
-    url = 'https://twitter.com/search?q={}&src=typed_query&f=live'.format(keyword)
+    url = 'https://twitter.com/search?q={}&src=typed_query'.format(keyword)
     driver.get(url)
     time.sleep(3)
     text2 = driver.find_elements_by_css_selector('#react-root > div > div > div > main > div > div > div > div > div > div:nth-child(2) > div')
 
 
-    for i in range(6):
+    for i in range(15):
         for q in range(3):
             body = driver.find_element_by_css_selector('body')
             body.send_keys(Keys.PAGE_DOWN)
@@ -69,6 +69,14 @@ def twitter():
     ko = nltk.Text(final, name="첫번째")
     data = ko.vocab().most_common(1000)
     date = time.strftime('%Y%m%d', time.localtime(time.time()))
+    date2 = time.strftime('%Y%m%d_%H%M', time.localtime(time.time()))
+    # 텍스트파일에 댓글 저장하기
+    file = open('text/twitter/twitter{}.txt'.format(date2), 'w', encoding='utf-8')
+
+    for review in result2:
+        file.write(review + '\n')
+
+    file.close()
 
     tmp_data = dict(data)
 

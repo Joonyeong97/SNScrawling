@@ -7,9 +7,11 @@ import time
 
 
 def daum():
+    date = time.strftime('%Y%m%d', time.localtime(time.time()))
+    date2 = time.strftime('%Y%m%d_%H%M', time.localtime(time.time()))
     # 다음뉴스 헤드라인 긁어오기
     http=[]
-    httz = 'https://media.daum.net/ranking/popular/'
+    httz = 'https://media.daum.net/ranking/popular/?regDate={}'.format(date)
     res = requests.get(httz)
     soup = BeautifulSoup(res.content, 'html.parser')
     body = soup.select('#mArticle > div.rank_news > ul.list_news2')
@@ -60,7 +62,15 @@ def daum():
                 data_1.append(data[i])
 
 
-    date = time.strftime('%Y%m%d', time.localtime(time.time()))
+
+    # 텍스트파일에 댓글 저장하기
+    file = open('text/daum/daum{}.txt'.format(date2), 'w', encoding='utf-8')
+
+    for review in text2:
+        file.write(review + '\n')
+
+    file.close()
+
 
     tmp_data = dict(data_1)
 

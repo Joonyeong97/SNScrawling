@@ -81,4 +81,4 @@ def daum():
     plt.axis('off'), plt.xticks([]), plt.yticks([])
     plt.tight_layout()
     plt.subplots_adjust(left=0, bottom=0, right=1, top=1, hspace=0, wspace=0)
-    plt.savefig("img/daum/daum_{}.png".format(date), bbox_inces='tight', dpi=400, pad_inches=0)
+    plt.savefig("C:/Users/82105/Desktop/bigdata analysis/flask/static/img/wordcloud/daum/daum_{}.png".format(date), bbox_inces='tight', dpi=400, pad_inches=0)

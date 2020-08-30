@@ -2,8 +2,34 @@ import Daum
 import Naver
 import time
 import Twitter
+import os
+
+# 필수 확인
+# 84.0.4147.30 / chrome version
+# 현재 설치되어 있는 크롬 드라이버 확인 후 적용바람
+# https://chromedriver.chromium.org/downloads
+
+# 필수 라이브러리
+# pip install customized_konlpy
+# pip install wordcloud
+# pip install selenium
+
+# 저장을 원하는 경로 설정
+img_save_path = os.getcwd()
+
+
+# 변경금지
+output_path = os.path.join(img_save_path,'OutPut_File')
+img_path = os.path.join(output_path,'img')
+text_path = os.path.join(output_path,'text')
+
+if os.path.isdir(output_path):
+    pass
+else:
+    os.mkdir(output_path)
 
 def text():
+    # 트위터 검색어
     text = '긴급재난지원금'
     return text
 

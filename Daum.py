@@ -4,9 +4,31 @@ import Main
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 import time
+import os
 
 
 def daum():
+    cr_name = 'daum'
+    # 이미지파일 저장 장소 확인
+    save_path = os.path.join(Main.img_path, cr_name)
+    if os.path.isdir(save_path):
+        print(cr_name + ' 이미지 경로 확인 완료')
+    elif os.path.isdir(Main.img_path):
+        os.mkdir(save_path)
+    else:
+        os.mkdir(Main.img_path)
+        os.mkdir(save_path)
+
+    text_save_path = os.path.join(Main.text_path, cr_name)
+    if os.path.isdir(text_save_path):
+        print(cr_name + ' 텍스트 경로 확인 완료')
+    elif os.path.isdir(Main.text_path):
+        os.mkdir(text_save_path)
+    else:
+        os.mkdir(Main.text_path)
+        os.mkdir(text_save_path)
+
+
     date = time.strftime('%Y%m%d', time.localtime(time.time()))
     date2 = time.strftime('%Y%m%d_%H%M', time.localtime(time.time()))
     # 다음뉴스 헤드라인 긁어오기
@@ -64,7 +86,7 @@ def daum():
 
 
     # 텍스트파일에 댓글 저장하기
-    file = open('text/daum/daum{}.txt'.format(date2), 'w', encoding='utf-8')
+    file = open(text_save_path+'/daum{}.txt'.format(date2), 'w', encoding='utf-8')
 
     for review in text2:
         file.write(review + '\n')
@@ -81,4 +103,4 @@ def daum():
     plt.axis('off'), plt.xticks([]), plt.yticks([])
     plt.tight_layout()
     plt.subplots_adjust(left=0, bottom=0, right=1, top=1, hspace=0, wspace=0)
-    plt.savefig("C:/Users/82105/Desktop/bigdata analysis/flask/static/img/wordcloud/daum/daum_{}.png".format(date), bbox_inces='tight', dpi=400, pad_inches=0)
+    plt.savefig(save_path+"/daum_{}.png".format(date), bbox_inces='tight', dpi=400, pad_inches=0)

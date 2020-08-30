@@ -7,6 +7,7 @@ from ckonlpy.tag import Twitter
 import re
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
+import os
 
 result = []
 
@@ -17,12 +18,32 @@ def cleanText(readData):
 
 # 코로나 바이러스
 def twitter():
+    cr_name = 'twitter'
+    # 이미지파일 저장 장소 확인
+    save_path = os.path.join(Main.img_path, cr_name)
+    if os.path.isdir(save_path):
+        print(cr_name + ' 이미지 경로 확인 완료')
+    elif os.path.isdir(Main.img_path):
+        os.mkdir(save_path)
+    else:
+        os.mkdir(Main.img_path)
+        os.mkdir(save_path)
+
+    text_save_path = os.path.join(Main.text_path, cr_name)
+    if os.path.isdir(text_save_path):
+        print(cr_name + ' 텍스트 경로 확인 완료')
+    elif os.path.isdir(Main.text_path):
+        os.mkdir(text_save_path)
+    else:
+        os.mkdir(Main.text_path)
+        os.mkdir(text_save_path)
+
+
     import time
     import nltk
     keyword = Main.text()
 
     # 웹접속 - 네이버 이미지 접속
-    # 79.0.3945.36 / chrome version
     print("접속중")
     driver = webdriver.Chrome(executable_path="./chromedriver.exe")
     driver.implicitly_wait(30)
@@ -71,7 +92,7 @@ def twitter():
     date = time.strftime('%Y%m%d', time.localtime(time.time()))
     date2 = time.strftime('%Y%m%d_%H%M', time.localtime(time.time()))
     # 텍스트파일에 댓글 저장하기
-    file = open('text/twitter/twitter{}.txt'.format(date2), 'w', encoding='utf-8')
+    file = open(text_save_path+'/twitter{}.txt'.format(date2), 'w', encoding='utf-8')
 
     for review in result2:
         file.write(review + '\n')
@@ -87,4 +108,4 @@ def twitter():
     plt.axis('off'), plt.xticks([]), plt.yticks([])
     plt.tight_layout()
     plt.subplots_adjust(left=0, bottom=0, right=1, top=1, hspace=0, wspace=0)
-    plt.savefig("C:/Users/82105/Desktop/bigdata analysis/flask/static/img/wordcloud/twitter/twitter_{}.png".format(date), bbox_inces='tight', dpi=400, pad_inches=0)
+    plt.savefig(save_path+"/twitter_{}.png".format(date), bbox_inces='tight', dpi=400, pad_inches=0)

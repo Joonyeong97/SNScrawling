@@ -5,6 +5,7 @@ from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 import time
 import os
+import pandas as pd
 
 
 def daum():
@@ -47,13 +48,22 @@ def daum():
     # 중복제거
     http = list(set(http))
 
-    text2 = []
+    files = pd.DataFrame()
     for i in range(len(http)):
         res = requests.get(http[i])
         soup = BeautifulSoup(res.content, 'html.parser')
         body = soup.select('.article_view')[0]
-        text = " ".join(p.get_text() for p in body.find_all('p'))
-        text2.insert(-1,text)
+
+        files = files.append(pd.DataFrame({
+            'Title': soup.find('div', attrs={'class': 'head_view'}).h3.text,
+            'Contents': " ".join(p.get_text() for p in body.find_all('p')),
+            'link': http[i]
+        }, index=[i]))
+    text2 = files.Contents
+
+    # 텍스트파일에 댓글 저장하기
+    files.to_csv(text_save_path+'/다음뉴스종합_{}.csv'.format(date2),index=False,encoding='utf-8')
+
 
 
     from ckonlpy.tag import Twitter
@@ -85,13 +95,6 @@ def daum():
 
 
 
-    # 텍스트파일에 댓글 저장하기
-    file = open(text_save_path+'/daum{}.txt'.format(date2), 'w', encoding='utf-8')
-
-    for review in text2:
-        file.write(review + '\n')
-
-    file.close()
 
 
     tmp_data = dict(data_1)

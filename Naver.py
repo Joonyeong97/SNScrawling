@@ -2,9 +2,21 @@ import requests
 from bs4 import BeautifulSoup
 import Main
 import os
+import pandas as pd
+import re
 
+
+
+def cleanText(readData):
+    # 텍스트에 포함되어 있는 특수 문자 제거
+    text = re.sub('[-=+,#/\?:^$.@*\"※~&%ㆍ!』\\‘|\(\)\[\]\<\>`\'…》\n_·李永钦▶]', '', readData)
+    return text
 
 def naver():
+    from selenium import webdriver
+    import re
+    from selenium.webdriver.common.keys import Keys
+    import time
     cr_name = 'naver'
     # 이미지파일 저장 장소 확인
     save_path = os.path.join(Main.img_path, cr_name)
@@ -27,14 +39,13 @@ def naver():
 
 
     # 네이버 헤드라인 가져오는소스
-    from selenium import webdriver
-    from selenium.webdriver.common.keys import Keys
-    import time
+
 
     date = time.strftime('%Y%m%d', time.localtime(time.time()))
+    date2 = time.strftime('%Y%m%d_%H%M', time.localtime(time.time()))
 
     result = []
-    re = []
+    res = []
 
     # 웹접속 - 네이버 이미지 접속
     print("접속중")
@@ -54,32 +65,35 @@ def naver():
 
         for i, q in enumerate(result):
             for e in q:
-                re.append(e.get_attribute('href'))
-
-    driver.close()
-    # 중복된 사이트제거.
-    http = list(set(re))
+                res.append(e.get_attribute('href'))
+    http = list(set(res))
     len(http)
-    
-    # 헤드라인 5개만
-    # httz = 'https://news.naver.com'
-    # res = requests.get(httz)
-    # soup = BeautifulSoup(res.content, 'html.parser')
-    # body = soup.select('#today_main_news > div.hdline_news > ul')
-    # body = body[0].find_all('a')
-    # for i in range(len(body)):
-    #     t = body[i].get('href')
-    #     http.append(t)
+    https = []
 
-    text2 = []
-    # 헤드라인중 링크소스만 뽑아서 다시 들어가서 텍스트만 뽑아옴
-    for i in range(len(http)):
-        res = requests.get(http[i])
+    for idx in range(len(http)):
+        if http[idx].find('popularDay') >= 0:
+            continue
+        else:
+            https.append(http[idx])
+
+    files = pd.DataFrame()
+
+    for i in range(len(https)):
+        res = requests.get(https[i])
         soup = BeautifulSoup(res.content, 'html.parser')
         body = soup.select('._article_body_contents')
-        for t in body:
-            text = t.get_text() # for p in body.find_all('div'))
-            text2.insert(-1,text)
+        files = files.append(pd.DataFrame({
+            'Title': soup.find('div', attrs={'class': 'article_info'}).h3.text,
+            'Contents': re.sub('   ', '', re.sub('    ', '', re.sub('\t', '',cleanText(body[0].text)[(cleanText(body[0].text)).find('{}') + 2:]))),
+            'link': https[i]},
+            index=[i]))
+
+    text2 = files.Contents
+    # 텍스트파일에 저장 csv
+    files.to_csv(text_save_path+'/네이버종합뉴스_{}.csv'.format(date2),index=False,encoding='utf-8')
+
+    driver.close()
+ # -------------------------------------
 
     # 사전만들기
     from ckonlpy.tag import Twitter
@@ -113,13 +127,7 @@ def naver():
     import time
     date = time.strftime('%Y%m%d', time.localtime(time.time()))
     date2 = time.strftime('%Y%m%d_%H%M', time.localtime(time.time()))
-    # 텍스트파일에 댓글 저장하기
-    file = open(text_save_path+'/naver{}.txt'.format(date2), 'w', encoding='utf-8')
 
-    for review in text2:
-        file.write(review + '\n')
-
-    file.close()
 
     tmp_data = dict(data_1)
 

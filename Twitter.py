@@ -8,6 +8,8 @@ import re
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 import os
+import chromedriver
+
 
 result = []
 
@@ -43,45 +45,62 @@ def twitter():
     import nltk
     keyword = Main.text()
 
+    # 웹 셋팅
+    chrome = chromedriver.generate_chrome(
+        driver_path=Main.driver_path,
+        headless=Main.headless,
+        download_path=Main.DOWNLOAD_DIR)
+
     # 웹접속 - 네이버 이미지 접속
-    print("접속중")
-    driver = webdriver.Chrome(executable_path="./chromedriver.exe")
-    driver.implicitly_wait(30)
+    print("Twitter 접속중")
+    # driver = webdriver.Chrome(executable_path="./chromedriver.exe")
+    # driver.implicitly_wait(30)
 
     url = 'https://twitter.com/search?q={}&src=typed_query'.format(keyword)
-    driver.get(url)
+    chrome.get(url)
     time.sleep(3)
-    text2 = driver.find_elements_by_css_selector('#react-root > div > div > div > main > div > div > div > div > div > div:nth-child(2) > div')
 
 
-    for i in range(15):
+    # text2 = chrome.find_elements_by_css_selector('#react-root > div > div > div > main > div > div > div > div > div > div:nth-child(2) > div')
+
+
+    # for i in range(15):
+    #     for q in range(3):
+    #         body = chrome.find_element_by_css_selector('body')
+    #         body.send_keys(Keys.PAGE_DOWN)
+    #         time.sleep(1)
+    #     for ttt in tqdm(text2):
+    #         result.append(ttt.text)
+    #     time.sleep(1)
+    #
+    #
+    # result2 = []
+    # for i in range(len(result)):
+    #     if i % 2 == 0:
+    #         result2.append(result[i])
+    # print(len(result2))
+    #
+    # result3 = []
+    # for i in range(len(result2)):
+    #     result3.append(cleanText(result2[i]))
+
+    body = chrome.find_element_by_css_selector('body')
+    text2 = chrome.find_elements_by_css_selector('#react-root > div > div > div.css-1dbjc4n.r-18u37iz.r-13qz1uu.r-417010 > main > div > div > div > div > div > div:nth-child(2) > div > div > section > div')
+
+    for i in range(10):
         for q in range(3):
-            body = driver.find_element_by_css_selector('body')
             body.send_keys(Keys.PAGE_DOWN)
             time.sleep(1)
         for ttt in tqdm(text2):
-            result.append(ttt.text)
-        time.sleep(1)
-
-    driver.close()
-
-    result2 = []
-    for i in range(len(result)):
-        if i % 2 == 0:
-            result2.append(result[i])
-    print(len(result2))
-
-    result3 = []
-    for i in range(len(result2)):
-        result3.append(cleanText(result2[i]))
+            result.append(re.sub('\n', '', ttt.text))
 
     t = Twitter()
     t.add_dictionary(Main.sajun(), 'Noun')
 
     tokens_ko = []
 
-    for i in range(len(result3)):
-        tokens_ko.append(t.nouns(result3[i]))
+    for i in range(len(result)):
+        tokens_ko.append(t.nouns(result[i]))
     final = []
     for _, q in enumerate(tokens_ko):
         for i in range(len(q)):
@@ -91,10 +110,12 @@ def twitter():
     data = ko.vocab().most_common(1000)
     date = time.strftime('%Y%m%d', time.localtime(time.time()))
     date2 = time.strftime('%Y%m%d_%H%M', time.localtime(time.time()))
+
+
     # 텍스트파일에 댓글 저장하기
     file = open(text_save_path+'/twitter{}.txt'.format(date2), 'w', encoding='utf-8')
 
-    for review in result2:
+    for review in result:
         file.write(review + '\n')
 
     file.close()

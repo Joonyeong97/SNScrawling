@@ -4,7 +4,7 @@ import Main
 import os
 import pandas as pd
 import re
-
+import chromedriver
 
 
 def cleanText(readData):
@@ -47,18 +47,24 @@ def naver():
     result = []
     res = []
 
+    # 웹 셋팅
+    chrome = chromedriver.generate_chrome(
+        driver_path=Main.driver_path,
+        headless=Main.headless,
+        download_path=Main.DOWNLOAD_DIR)
+
     # 웹접속 - 네이버 이미지 접속
-    print("접속중")
-    driver = webdriver.Chrome(executable_path="./chromedriver.exe")
-    driver.implicitly_wait(30)
+    print("Naver 접속중")
+    # driver = webdriver.Chrome(executable_path="./chromedriver.exe")
+    # driver.implicitly_wait(30)
 
     url = 'https://news.naver.com/main/ranking/popularDay.nhn?rankingType=popular_day&date={}'.format(date)
-    driver.get(url)
-    time.sleep(1)
+    chrome.get(url)
+    time.sleep(2)
 
     # scroll(3)
     for sun in range(4, 10):
-        pr = driver.find_elements_by_xpath('//*[@id="wrap"]/table/tbody/tr/td[2]/div/div[{}]'.format(sun))
+        pr = chrome.find_elements_by_xpath('//*[@id="wrap"]/table/tbody/tr/td[2]/div/div[{}]'.format(sun))
         for p in pr:
             result.append(p.find_elements_by_tag_name('a'))
         # print(result)
@@ -92,7 +98,6 @@ def naver():
     # 텍스트파일에 저장 csv
     files.to_csv(text_save_path+'/네이버종합뉴스_{}.csv'.format(date2),index=False,encoding='utf-8')
 
-    driver.close()
  # -------------------------------------
 
     # 사전만들기

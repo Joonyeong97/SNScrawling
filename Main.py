@@ -3,6 +3,9 @@ import Naver
 import time
 import Twitter
 import os
+import sys
+
+
 
 # 필수 확인
 # 84.0.4147.30 / chrome version
@@ -14,7 +17,30 @@ import os
 # pip install wordcloud
 # pip install selenium
 
-# 저장을 원하는 경로 설정
+PROJECT_DIR = os.getcwd()
+DOWNLOAD_DIR = os.path.join(PROJECT_DIR,'download')
+driver_path = os.path.join(PROJECT_DIR, 'lib/webDriver')
+
+# GUI 창 설정 (True = GUI 안함, False = GUI)
+headless = True
+
+# OS 확인
+platform = sys.platform
+if platform == 'darwin':
+    print('System platform : Darwin')
+    driver_path = os.path.join(driver_path, 'chromedriver_mac')
+elif platform == 'linux':
+    print('System platform : Linux')
+    driver_path = os.path.join(driver_path, 'chromedriver_linux')
+elif platform == 'win32':
+    print('System platform : Window')
+    driver_path = os.path.join(driver_path,'chromedriver_win.exe')
+else:
+    print(f'[{sys.platform}] 지원하지 않는 운영체제입니다. 확인 바랍니다.')
+    raise Exception()
+
+
+# 저장을 원하는 경로 설정 / 현재 경로
 img_save_path = os.getcwd()
 
 
@@ -30,7 +56,7 @@ else:
 
 def text():
     # 트위터 검색어
-    text = '긴급재난지원금'
+    text = '재난지원금'
     return text
 
 # 단어사전을 추가해야함. / 워드클라우드 사용시 사용됩니다.
@@ -53,7 +79,7 @@ def sajun():
              '7월내','조주빈','N번방박사','한타바이러스','중국바이러스','설치류','중국','초중고','EBS특강','EBS','온라인강의',
              '포털서비스','네이버','카카오','라이브특강','라이브특강','접속자폭주','피파온라인4','상반기','로스터업데이트',
              '넥슨','후베이성','우한폭동','봉쇄풀린','두달만에','손석희','JTBC','삼성','긴급재난지원금','복지로',
-             '중산층','소득분위','70%','150%','중위소득']
+             '중산층','소득분위','70%','150%','중위소득','재난지원금']
     return sajun
 
 

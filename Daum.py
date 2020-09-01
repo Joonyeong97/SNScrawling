@@ -7,7 +7,6 @@ import time
 import os
 import pandas as pd
 
-
 def daum():
     cr_name = 'daum'
     # 이미지파일 저장 장소 확인
@@ -34,6 +33,7 @@ def daum():
     date2 = time.strftime('%Y%m%d_%H%M', time.localtime(time.time()))
     # 다음뉴스 헤드라인 긁어오기
     http=[]
+    print('Daum 접속 중')
     httz = 'https://media.daum.net/ranking/popular/?regDate={}'.format(date)
     res = requests.get(httz)
     soup = BeautifulSoup(res.content, 'html.parser')
